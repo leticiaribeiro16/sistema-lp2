@@ -1,29 +1,17 @@
-### IntelliJ IDEA ###
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+# Ignorar arquivos compilados
+/out
+/bin
+*.class
 
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
+# Ignorar configurações do IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
-.vscode/
-
-### Mac OS ###
+# Ignorar arquivos de sistema
 .DS_Store
+Thumbs.db
+
+# Ignorar o arquivo de preferências local (pois cada usuário terá o seu)
+preferencias.txt

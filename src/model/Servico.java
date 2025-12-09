@@ -1,6 +1,7 @@
 package model;
 
-public class Servico {
+// Implementa a interface
+public class Servico implements IMonetario {
 
     private int idServico;
     private String nome;
@@ -41,5 +42,11 @@ public class Servico {
 
     public void setDuracaoEmMinutos(int duracaoEmMinutos) {
         this.duracaoEmMinutos = duracaoEmMinutos;
+    }
+
+    // Implementação da Interface (Imposto de 5% para serviços - ISS)
+    @Override
+    public double calcularImposto() {
+        return this.preco * 0.05;
     }
 }

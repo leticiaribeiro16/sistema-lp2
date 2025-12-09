@@ -1,6 +1,6 @@
 package model;
 
-public class Produto {
+public class Produto implements IMonetario {
 
     private int idProduto;
     private String nome;
@@ -49,5 +49,11 @@ public class Produto {
         } else {
             System.out.println("Erro: Estoque insuficiente!");
         }
+    }
+
+    // Implementação da Interface (Imposto de 10% para produtos)
+    @Override
+    public double calcularImposto() {
+        return this.preco * 0.10;
     }
 }

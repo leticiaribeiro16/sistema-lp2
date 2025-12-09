@@ -1,12 +1,25 @@
 ---
-config:
-  theme: default
+title: Diagrama de Classes - Sistema Aumigo
 ---
 classDiagram
 direction TB
-title Diagrama de Classes - Sistema Aumigo
 
-    %% --- Namespace Model (Entidades) ---
+    %% ==========================================
+    %% INTERFACES
+    %% ==========================================
+    class IAutenticavel {
+        <<interface>>
+        +autenticar(String senha) boolean
+    }
+
+    class IMonetario {
+        <<interface>>
+        +calcularImposto() double
+    }
+
+    %% ==========================================
+    %% NAMESPACE MODEL
+    %% ==========================================
     namespace model {
         class Pessoa {
             <<abstract>>
@@ -24,6 +37,8 @@ title Diagrama de Classes - Sistema Aumigo
         class Funcionario {
             -String cargo
             -double salario
+            -String senha
+            +autenticar(String) boolean
             +exibirDetalhes() void
         }
 
@@ -33,6 +48,7 @@ title Diagrama de Classes - Sistema Aumigo
             -String nome
             -String raca
             -int idade
+            -Cliente dono
             +emitirSom()* String
             +exibirDetalhes() void
         }
@@ -40,13 +56,11 @@ title Diagrama de Classes - Sistema Aumigo
         class Cachorro {
             -String porte
             +emitirSom() String
-            +exibirDetalhes() void
         }
 
         class Gato {
             -boolean pelagemLonga
             +emitirSom() String
-            +exibirDetalhes() void
         }
 
         class Produto {
@@ -54,6 +68,8 @@ title Diagrama de Classes - Sistema Aumigo
             -String nome
             -double preco
             -int estoque
+            +darBaixaEstoque(int) void
+            +calcularImposto() double
         }
 
         class Servico {
@@ -61,85 +77,102 @@ title Diagrama de Classes - Sistema Aumigo
             -String nome
             -double preco
             -int duracaoEmMinutos
+            +calcularImposto() double
         }
 
         class Agendamento {
             -int idAgendamento
             -LocalDateTime dataHora
             -boolean concluido
+            +marcarConcluido() void
+        }
+
+        class Fornecedor {
+            -int idFornecedor
+            -String nomeEmpresa
+            -String cnpj
+            -String telefone
+        }
+
+        class Vacina {
+            -int idVacina
+            -String nomeVacina
+            -String lote
+            -LocalDate dataAplicacao
+        }
+
+        class PreferenciasUsuario {
+            -String nomeUsuario
+            -String tema
         }
     }
 
-    %% --- Namespace Repository (CRUD) ---
+    %% ==========================================
+    %% NAMESPACE UTIL
+    %% ==========================================
+    namespace util {
+        class GerenciadorArquivos {
+            +salvarPreferencias(String, String)$ void
+            +carregarPreferencias()$ PreferenciasUsuario
+        }
+    }
+
+    %% ==========================================
+    %% NAMESPACE REPOSITORY
+    %% ==========================================
     namespace repository {
-        class ClienteRepositorio {
-            -List~Cliente~ clientes
-            +adicionarCliente(Cliente) void
-            +buscarClientePorCpf(String) Cliente
-            +removerCliente(String) void
-        }
-        class FuncionarioRepositorio {
-            -List~Funcionario~ funcionarios
-            +adicionarFuncionario(Funcionario) void
-        }
-        class AnimalRepositorio {
-            -List~Animal~ animais
-            +adicionarAnimal(Animal) void
-        }
-        class ProdutoRepositorio {
-            -List~Produto~ produtos
-            +adicionarProduto(Produto) void
-        }
-        class ServicoRepositorio {
-            -List~Servico~ servicos
-            +adicionarServico(Servico) void
-        }
-        class AgendamentoRepositorio {
-            -List~Agendamento~ agendamentos
-            +adicionarAgendamento(Agendamento) void
-        }
+        class ClienteRepositorio
+        class FuncionarioRepositorio
+        class AnimalRepositorio
+        class ProdutoRepositorio
+        class ServicoRepositorio
+        class AgendamentoRepositorio
+        class FornecedorRepositorio
+        class VacinaRepositorio
     }
 
-    %% --- Namespace Exception ---
+    %% ==========================================
+    %% NAMESPACE EXCEPTION
+    %% ==========================================
     namespace exception {
-        class RuntimeException {
-            <<Java Built-in>>
-        }
-        class RecursoNaoEncontradoException {
-            +RecursoNaoEncontradoException(String) void
-        }
-        class ValidacaoException {
-            +ValidacaoException(String) void
-        }
+        class RecursoNaoEncontradoException
+        class ValidacaoException
     }
 
-    %% --- RELACIONAMENTOS ---
+    %% ==========================================
+    %% RELACIONAMENTOS
+    %% ==========================================
 
-    %% Herança (Requisito 3)
-    Pessoa <|-- Cliente : "Herda"
-    Pessoa <|-- Funcionario : "Herda"
-    Animal <|-- Cachorro : "Herda"
-    Animal <|-- Gato : "Herda"
+    %% Herança
+    Pessoa <|-- Cliente
+    Pessoa <|-- Funcionario
+    Animal <|-- Cachorro
+    Animal <|-- Gato
 
-    %% Herança das Exceções (Requisito 6)
-    RuntimeException <|-- RecursoNaoEncontradoException
-    RuntimeException <|-- ValidacaoException
+    %% Realização (Interfaces)
+    IAutenticavel <|.. Funcionario : Implementa
+    IMonetario <|.. Produto : Implementa
+    IMonetario <|.. Servico : Implementa
 
-    %% Associação/Composição (Repositórios guardam modelos)
-    ClienteRepositorio o-- "0..*" Cliente : "Gerencia"
-    FuncionarioRepositorio o-- "0..*" Funcionario : "Gerencia"
-    AnimalRepositorio o-- "0..*" Animal : "Gerencia"
-    ProdutoRepositorio o-- "0..*" Produto : "Gerencia"
-    ServicoRepositorio o-- "0..*" Servico : "Gerencia"
-    AgendamentoRepositorio o-- "0..*" Agendamento : "Gerencia"
-    
-    %% Associações entre modelos
-    Animal --> "1" Cliente : "tem como dono"
-    Agendamento --> "1" Cliente : "associado a"
-    Agendamento --> "1" Animal : "associado a"
-    Agendamento --> "1" Funcionario : "associado a"
-    Agendamento --> "1" Servico : "associado a"
+    %% Associações
+    Animal --> "1" Cliente : Dono
+    Vacina --> "1" Animal : Vacinado
+    Agendamento --> "1" Cliente
+    Agendamento --> "1" Animal
+    Agendamento --> "1" Funcionario
+    Agendamento --> "1" Servico
 
-    %% Dependência (Repositórios usam Exceções)
-    ClienteRepositorio ..> RecursoNaoEncontradoException : "Lança"
-    ClienteRepositorio ..> ValidacaoException : "Lança"
+    %% Dependências Repositórios
+    ClienteRepositorio o-- Client
+    FuncionarioRepositorio o-- Funcionario
+    AnimalRepositorio o-- Animal
+    ProdutoRepositorio o-- Produto
+    ServicoRepositorio o-- Servico
+    AgendamentoRepositorio o-- Agendamento
+    FornecedorRepositorio o-- Fornecedor
+    VacinaRepositorio o-- Vacina
+
+    %% Dependências Diversas
+    GerenciadorArquivos ..> PreferenciasUsuario : Persiste
+    ClienteRepositorio ..> ValidacaoException : Lanca
+    ClienteRepositorio ..> RecursoNaoEncontradoException : Lanca

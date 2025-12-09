@@ -1,14 +1,18 @@
 package model;
 
-public class Funcionario extends Pessoa {
+// Implementa a interface
+public class Funcionario extends Pessoa implements IAutenticavel {
 
     private String cargo;
     private double salario;
+    private String senha; // novo atributo para login
 
-    public Funcionario(String nome, String cpf, String telefone, String cargo, double salario) {
+    public Funcionario(String nome, String cpf, String telefone, String cargo, double salario, String senha) {
         super(nome, cpf, telefone);
         this.cargo = cargo;
         this.salario = salario;
+        // Atualizou o construtor pra receber senha
+        this.senha = senha;
     }
 
     public String getCargo() {
@@ -25,6 +29,13 @@ public class Funcionario extends Pessoa {
 
     public void setSalario(double salario) {
         this.salario = salario;
+    }
+
+    // Implementação do método interface
+    @Override
+    public boolean autenticar(String senhaInput) {
+        // Verifica se a senha digitada é igual à senha do funcionário
+        return this.senha.equals(senhaInput);
     }
 
     @Override
